@@ -1,0 +1,44 @@
+#loading-yz-bar {
+  position: absolute;
+  width: 100%;
+  z-index: 10000;
+}
+
+#loading-yz-bar .loading-main {
+  width: 256px;
+  height: 100px;
+  background-color: #0a0a0a;
+  margin: 0 auto;
+  opacity: 0.5;
+}
+
+#loading-yz-bar .loading-main p {
+  color: white;
+  font-weight: bold;
+}
+
+.loading {
+  display: table;
+  width: 100%;
+  height: 100vh;
+  text-align: center;
+  position: fixed;
+  z-index: 10000;
+  top: 0px;
+}
+
+.img {
+  background-size: cover;
+
+  background-image: url("~src/assets/images/loading-bars.svg");
+}
+
+.loading .table-cell {
+  display: table-cell;
+  vertical-align: middle;
+}
+
+.loading .table-cell h1 {
+  color: #ffffff;
+  margin-top: 2em;
+}

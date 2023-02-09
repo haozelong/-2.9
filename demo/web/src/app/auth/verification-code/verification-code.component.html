@@ -1,0 +1,4 @@
+<button type="button" class="btn btn-sm"
+        [ngClass]="{'btn-success': !verificationCodeButtonDisabled(), 'btn-secondary': verificationCodeButtonDisabled()}"
+        (click)="sendVerificationCode()"
+        [disabled]="verificationCodeButtonDisabled()">{{ validateCodeInfo }}</button>

@@ -1,0 +1,52 @@
+<form [formGroup]="registerForm" (ngSubmit)="onRegister()">
+  <div class="form-group">
+    <label for="register-name">姓名<code>*</code></label>
+    <input type="text" class="form-control" id="register-name" placeholder="请输入姓名" formControlName="name"/>
+  </div>
+  <div class="row-1"
+       *ngIf="registerForm.get('name').invalid && (registerForm.get('name').dirty || registerForm.get('name').touched)">
+    <small class="text-danger" *ngIf="registerForm.get('name')?.errors?.pattern">
+      姓名格式不正确</small>
+    <small class="text-danger" *ngIf="registerForm.get('name')?.errors?.required">
+      姓名不能为空</small>
+  </div>
+
+  <div class="form-group">
+    <label for="register-username">手机号<code>*</code></label>
+    <input (input)="onUsernameChange()" type="text" class="form-control" id="register-username"
+           placeholder="请输入手机号"
+           formControlName="registerUsername"/>
+    <small
+      *ngIf="registerForm.get('registerUsername').invalid && (registerForm.get('registerUsername').dirty || registerForm.get('registerUsername').touched)">
+      <span class="text-danger" *ngIf="registerForm.get('registerUsername').errors?.phone">
+        手机号格式不正确</span>
+    </small>
+  </div>
+
+  <div class="form-group" *ngIf="registerForm.get('registerUsername').valid">
+    <label for="verificationCode">验证码<code>*</code></label>
+    <div class="input-group">
+      <input type="text" class="form-control" id="verificationCode" placeholder="请输入验证码"
+             formControlName="verificationCode"/>
+      <app-verification-code [username]="registerForm.get('registerUsername').value" class="input-group-append"></app-verification-code>
+    </div>
+  </div>
+
+  <div class="form-group" *ngIf="showNumInput">
+    <label for="register-num">{{numName}}<code>*</code></label>
+    <input type="String" class="form-control" id="register-num" placeholder="请输入{{numName}}"
+           formControlName="num"/>
+  </div>
+  <div class="row-1 mt-1"
+       *ngIf="registerForm.get('num').invalid && (registerForm.get('num').dirty || registerForm.get('num').touched) && showNumInput">
+    <small class="text-danger" *ngIf="registerForm.get('num')?.errors?.pattern">
+      {{numName}}格式不正确</small>
+    <small class="text-danger" *ngIf="registerForm.get('num')?.errors?.required">
+      {{numName}}不能为空</small>
+  </div>
+
+  <button type="submit" [disabled]="registerForm.invalid"
+          class="btn btn-success form-control form-control-sm">
+    注册
+  </button>
+</form>
