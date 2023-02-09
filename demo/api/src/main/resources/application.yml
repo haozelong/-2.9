@@ -1,0 +1,97 @@
+spring:
+  profiles:
+    active: ${active:pro}
+  h2:
+    console:
+      enabled: true
+  jpa:
+    hibernate:
+      ddl-auto: ${ddl-auto:create}
+    show-sql: ${show-sql:false}
+
+server:
+  port: ${port:8081}
+  servlet:
+    session:
+      timeout: 60m
+app:
+  crypto: ${crypto:gllwmmds4cv1d678azj8plk4sypv35yn}
+  sms-type: ${sms-type:local}
+  username: ${default-username:13920618851}
+  password: ${default-password:admin}
+  timeout: ${effective-timeout:3600}
+  sms:
+    access-key-id: 8TkA3lc5Vo8ub2Cj
+    access-secret: 3Q7OleKWhQuDlWPJ3rrXCkO3iYKAzj
+    sign-name: ????
+  monitor:
+    url: http://${monitor.url:log.mengyunzhi.com:8001}/api/log/batchSave?token=${monitor.token:8KcgsPBlbxMIZBVJKg3AIZgBubPq7lEg}
+  token: switchgear-
+  wechat:
+    interval-seconds: 5
+    template:
+      multiple-monitors-multiple-warnings: 8UzahI79SnBXTNIJMSFbLRljIMwzdStlY2dHHSNSgJA
+
+logging:
+  level:
+    club:
+      yunzhi:
+        switchgear: info
+    root: info
+
+wx:
+  miniapp:
+    appid: ${appid:wx9130d938fe52aa0b}
+    secret: ${secret:13758b58f226639dee51b89bd093c146}
+    #    286ab9bfe0b650e9e22ab45c8213a033 -> htev
+    token: yunzhi
+    aesKey: aseKey
+    msgDataFormat: json
+  mp:
+    appid: ${appid:wx9130d938fe52aa0b}
+    secret: ${secret:13758b58f226639dee51b89bd093c146}
+    token: yunzhi
+    aesKey: 123
+---
+spring:
+  config:
+    activate:
+      on-profile: demo
+  jpa:
+    hibernate:
+      ddl-auto: ${ddl-auto:update}
+  flyway:
+    enabled: false
+  datasource:
+    url: jdbc:h2:~/h2-data/switchgear
+
+wx:
+  miniapp:
+    appid: ${appid:wx9130d938fe52aa0b}
+    secret: ${secret:13758b58f226639dee51b89bd093c146}
+    token: yunzhi1
+    aesKey:
+    msgDataFormat: json
+  mp:
+    appid: ${appid:wx9130d938fe52aa0b}
+    secret: ${secret:13758b58f226639dee51b89bd093c146}
+    #    9b4962ef8bc4a483abd38d70df9eb617 -> htev
+    token: yunzhi
+    aesKey:
+
+---
+spring:
+  config:
+    activate:
+      on-profile: pro
+  jpa:
+    hibernate:
+      ddl-auto: validate
+  flyway:
+    enabled: true
+  # 配置数据源
+  datasource:
+    url: jdbc:mysql://${datasource.url:localhost}:${datasource.port:3306}/${datasource.dbname:demo}?useUnicode=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=Asia/Shanghai
+    username: ${datasource.username:root}
+    password: ${datasource.password:}
+
