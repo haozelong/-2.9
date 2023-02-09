@@ -1,5 +1,6 @@
 import {USER_ROLE, UserRole} from './enum/user-role';
 import {UserStatus} from './enum/user-status';
+import {WeChatUser} from './we-chat-user';
 
 export class User {
   /** id */
@@ -30,6 +31,8 @@ export class User {
    */
   username: string | undefined;
 
+  weChatUser: WeChatUser;
+
   constructor(data = {} as {
     id?: number,
     password?: string,
@@ -37,6 +40,7 @@ export class User {
     num?: string,
     status?: UserStatus,
     username?: string,
+    weChatUser?: WeChatUser
   }) {
     this.id = data.id;
     this.password = data.password;
@@ -45,5 +49,6 @@ export class User {
     this.status = data.status;
     this.name = data.name;
     this.num = data.num;
+    this.weChatUser = data.weChatUser;
   }
 }

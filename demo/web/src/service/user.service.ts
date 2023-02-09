@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Observable, of, ReplaySubject} from 'rxjs';
+import {Observable, of, ReplaySubject, Subject} from 'rxjs';
 import {HttpClient, HttpHeaders, HttpParams} from '@angular/common/http';
 import {User} from '../entity/user';
 import {catchError, map, tap} from 'rxjs/operators';
@@ -10,6 +10,7 @@ import {Assert, isNotNullOrUndefined, Random} from '../common/utils';
 import {Page} from '../common/page';
 import {HttpSuccessResponse} from '../common/http-success-response';
 import {UserStatus} from '../entity/enum/user-status';
+import {WebSocketData} from '../app/model/web-socket-data';
 
 @Injectable({
   providedIn: 'root'
@@ -52,6 +53,19 @@ export class UserService {
               private router: Router) {
   }
 
+  /**
+   * 绑定用户二维码
+   */
+  private onScanBindUserQrCode = new Subject<WebSocketData>();
+  public onScanBindUserQrCode$ = this.onScanBindUserQrCode.asObservable() as Observable<WebSocketData>;
+
+
+  /**
+   * 生成绑定的二维码
+   */
+  generateBindQrCode(): Observable<string> {
+    return this.httpClient.get<string>(`${this.baseUrl}/generateBindQrCode`);
+  }
 
   /**
    * 校验密码是否正确
@@ -77,7 +91,7 @@ export class UserService {
       return newPassword !== confirmNewPassword ? {confirmPasswordError: true} : null;
     }
     return null;
-  };
+  }
 
   /**
    * 删除

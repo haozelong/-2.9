@@ -94,4 +94,16 @@ spring:
     url: jdbc:mysql://${datasource.url:localhost}:${datasource.port:3306}/${datasource.dbname:demo}?useUnicode=true&characterEncoding=utf-8&allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=Asia/Shanghai
     username: ${datasource.username:root}
     password: ${datasource.password:}
-
+wx:
+  miniapp:
+    appid: ${appid:wx9130d938fe52aa0b}
+    secret: ${secret:13758b58f226639dee51b89bd093c146}
+    token: yunzhi1
+    aesKey:
+    msgDataFormat: json
+  mp:
+    appid: ${appid:wx9130d938fe52aa0b}
+    secret: ${secret:13758b58f226639dee51b89bd093c146}
+    #    9b4962ef8bc4a483abd38d70df9eb617 -> htev
+    token: yunzhi
+    aesKey:

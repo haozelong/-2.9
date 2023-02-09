@@ -1,7 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import {Assert} from '../../common/utils';
-import {User} from "../../entity/user";
-import {UserService} from "../../service/user.service";
+import {filter, first} from 'rxjs/operators';
+import {CommonService} from '../../service/common.service';
+import {WebsocketService} from '../../service/websocket.service';
+import {UserService} from '../../service/user.service';
+import {User} from '../../entity/user';
 
 @Component({
   selector: 'app-personal',
@@ -10,28 +13,52 @@ import {UserService} from "../../service/user.service";
 })
 export class PersonalComponent implements OnInit {
 
-  /**
-   * 初始化对象
-   */
   user = new User();
+  isShowQrCode = false;
+  qrCodeSrc: string;
 
-  constructor(private userService: UserService) { }
+  constructor(private userService: UserService,
+              private location: Location,
+              private commonService: CommonService,
+              private websocketService: WebsocketService) { }
 
   ngOnInit(): void {
     this.userService.getCurrentLoginUser$()
-      .subscribe((data) => {
-        this.setStudent(data);
+      .pipe(filter(v => v !== null && v !== undefined))
+      .subscribe((data: User) => {
+        this.setUser(data);
       });
   }
 
-  /**
-   * 设置user内容
-   */
-  setStudent(user: User): void {
-    Assert.isString(user.name, 'name参数不存在');
-    Assert.isString(user.username, 'username参数不存在');
 
+
+  setUser(user: User): void {
+    Assert.isNotNullOrUndefined(user.name, 'name must be exit');
+    Assert.isNotNullOrUndefined(user.username, 'username must be exit');
     this.user = user;
+  }
+
+  onBindWeChat() {
+    this.userService.generateBindQrCode()
+      .subscribe(src => {
+        this.qrCodeSrc = src;
+        this.isShowQrCode = true;
+        this.userService.onScanBindUserQrCode$
+          .pipe(first())
+          .subscribe(stomp => {
+            this.user.weChatUser = {openid: stomp.body};
+            this.isShowQrCode = false;
+            this.commonService.success();
+          });
+      });
+  }
+
+  onClose() {
+    this.isShowQrCode = false;
+  }
+
+  onTest() {
+    this.websocketService.send('/app/hello', '123');
   }
 
 }

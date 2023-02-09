@@ -5,14 +5,16 @@ import { PersonalRoutingModule } from './personal-routing.module';
 import {PersonalComponent} from './personal.component';
 import {ModifyPasswordComponent} from './modify-password/modify-password.component';
 import {ReactiveFormsModule} from '@angular/forms';
+import {YzModalModule} from '../../common/yz-modal/yz-modal.module';
 
 
 @NgModule({
   declarations: [PersonalComponent, ModifyPasswordComponent],
-  imports: [
-    CommonModule,
-    PersonalRoutingModule,
-    ReactiveFormsModule
-  ]
+    imports: [
+        CommonModule,
+        PersonalRoutingModule,
+        ReactiveFormsModule,
+        YzModalModule
+    ]
 })
 export class PersonalModule { }
