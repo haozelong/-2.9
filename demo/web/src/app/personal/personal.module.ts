@@ -4,7 +4,8 @@ import { CommonModule } from '@angular/common';
 import { PersonalRoutingModule } from './personal-routing.module';
 import {PersonalComponent} from './personal.component';
 import {ModifyPasswordComponent} from './modify-password/modify-password.component';
-import {ReactiveFormsModule} from '@angular/forms';
+import {FormsModule, ReactiveFormsModule} from '@angular/forms';
+import {HttpClientModule} from '@angular/common/http';
 import {YzModalModule} from '../../common/yz-modal/yz-modal.module';
 
 
@@ -14,7 +15,9 @@ import {YzModalModule} from '../../common/yz-modal/yz-modal.module';
         CommonModule,
         PersonalRoutingModule,
         ReactiveFormsModule,
-        YzModalModule
+        YzModalModule,
+        HttpClientModule,
+        FormsModule,
     ]
 })
 export class PersonalModule { }

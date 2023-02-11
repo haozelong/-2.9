@@ -1,0 +1,27 @@
+<form class="container-sm" (ngSubmit)="onSubmit(formGroup)" [formGroup]="formGroup">
+  <div class="mb-3 row">
+    <label for="password" class="col-3 text-right col-form-label">姓名<code>*</code></label>
+    <div class="col-7">
+      <input type="text" class="form-control" [formControlName]="this.formKeys.name" id="password">
+      <small class="text-danger"
+             *ngIf="formGroup.get(this.formKeys.name)!.touched && formGroup.get(this.formKeys.name)!.invalid">
+        格式不正确
+      </small>
+    </div>
+  </div>
+  <div class="mb-3 row">
+    <label for="username" class="col-3 text-right col-form-label">用户名<code>*</code></label>
+    <div class="col-7">
+      <input type="text" class="form-control" [formControlName]="this.formKeys.username" id="username">
+      <small class="text-danger"
+             *ngIf="formGroup.get(this.formKeys.username)!.touched && formGroup.get(this.formKeys.username)!.invalid">
+        必填项
+      </small>
+    </div>
+  </div>
+  <div class="mb-3 row">
+    <div class="col-10 offset-5">
+      <button class="btn btn-primary" [disabled]="formGroup.invalid"><i class="far fa-save"></i> 保存</button>
+    </div>
+  </div>
+</form>

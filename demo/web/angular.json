@@ -25,10 +25,12 @@
             "aot": false,
             "assets": [
               "src/favicon.ico",
-              "src/assets"
+              "src/assets",
+              "src/config.json"
             ],
             "styles": [
               "src/styles.scss",
+              "src/assets/css/iconfont.css",
               "./node_modules/bootstrap/dist/css/bootstrap.css",
               "./node_modules/@fortawesome/fontawesome-free/css/all.css"
             ],
@@ -36,7 +38,10 @@
               "./node_modules/jquery/dist/jquery.slim.min.js",
               "./node_modules/popper.js/dist/umd/popper.min.js",
               "./node_modules/bootstrap/dist/js/bootstrap.min.js",
-              "./node_modules/@fortawesome/fontawesome-free/js/all.js"
+              "./node_modules/@fortawesome/fontawesome-free/js/all.js",
+              "src/assets/js/iconfont.js",
+              "src/assets/js/sockjs.min.js",
+              "src/assets/js/stomp.min.js"
             ]
           },
           "configurations": {

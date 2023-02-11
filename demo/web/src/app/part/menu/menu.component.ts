@@ -28,7 +28,6 @@ export class MenuComponent implements OnInit, OnDestroy {
       this.menus = [];
       if (user) {
         menus.forEach(menu => {
-          console.log(menu.url);
           this.menus.push(menu);
         });
       }

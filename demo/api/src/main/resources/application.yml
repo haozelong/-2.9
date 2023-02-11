@@ -86,7 +86,7 @@ spring:
       on-profile: pro
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
   flyway:
     enabled: true
   # 配置数据源

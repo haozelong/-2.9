@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
-import {Observable} from 'rxjs';
+import {Observable, Subject} from 'rxjs';
 import {finalize} from 'rxjs/operators';
 import {CommonService} from '../../service/common.service';
 
@@ -12,28 +12,12 @@ import {CommonService} from '../../service/common.service';
 })
 export class LoadingInterceptor implements HttpInterceptor {
 
-  constructor(private commonService: CommonService) {
-  }
+  public static loadingSubject = new Subject<boolean>();
+  public static loading$ = LoadingInterceptor.loadingSubject.asObservable();
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    if (this.shouldIntercept(req)) {
-      this.commonService.sendLoading(true);
-      return next.handle(req).pipe(
-        finalize(() => {
-          this.commonService.sendLoading(false);
-        })
-      );
-    } else {
-      return next.handle(req);
-    }
-  }
-
-  /**
-   * 当上传文件时不进行拦截.
-   * @param request 请求
-   */
-  public shouldIntercept(request: HttpRequest<any>): boolean {
-    return request.responseType !== 'blob';
+    LoadingInterceptor.loadingSubject.next(true);
+    return next.handle(req).pipe(finalize(() => LoadingInterceptor.loadingSubject.next(false)));
   }
 
 }

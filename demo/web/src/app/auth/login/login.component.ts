@@ -3,8 +3,8 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import {UserService} from '../../../service/user.service';
 import {config} from '../../../conf/app.config';
-import {HTTP_STATUS_CODE} from '../../../common/http-code';
 import {CommonService} from '../../../service/common.service';
+import {first} from 'rxjs/operators';
 
 @Component({
   selector: 'app-login',
@@ -15,6 +15,10 @@ export class LoginComponent implements OnInit {
 
   // 正在倒计时
   countDowning = false;
+
+  loginModel = 'username' as 'username' | 'wechat';
+
+  qrCodeSrc: string;
 
   /** 登录表单对象 */
   loginForm: FormGroup;
@@ -40,7 +44,6 @@ export class LoginComponent implements OnInit {
         Validators.pattern('\\d+'),
         Validators.required]],
       password: ['', Validators.required],
-      verificationCode: ['0000', Validators.required],
     });
   }
 
@@ -52,31 +55,47 @@ export class LoginComponent implements OnInit {
       });
   }
 
-  login(): void {
-    const user = {
-      username: this.loginForm.get('username')!.value as string,
-      password: this.loginForm.get('password')!.value as string,
-      verificationCode: this.loginForm.get('verificationCode')!.value as string
-    };
-
+  login(user: {username: string, password: string}): void {
     this.userService.login(user)
-      .subscribe(() => {
-        this.userService.initCurrentLoginUser(() => {
-          this.router.navigateByUrl('dashboard').then();
+      // tslint:disable-next-line:no-shadowed-variable
+      .subscribe((user) => {
+        console.log('user' + user);
+        this.userService.initCurrentLoginUser().subscribe({
+          next: () => this.router.navigateByUrl('dashboard').then()
         });
       }, (response) => {
         const errorCode = +response.headers.get(config.ERROR_RESPONSE_CODE_KEY);
         const errorMessage = response.headers.get(config.ERROR_RESPONSE_MESSAGE_KEY);
         console.log(`发生错误：${errorCode}, ${errorMessage}`);
-        if (errorCode === HTTP_STATUS_CODE.REQUIRE_VERIFICATION_CODE.code) {
-          this.showValidateCode = true;
-          this.loginForm.patchValue({verificationCode: ''});
-        } else {
-          this.showValidateCode = false;
-          this.loginForm.patchValue({verificationCode: '0000'});
-        }
         this.errorInfo = '登录失败，请检查您填写的信息是否正确, 如若检查无误，可能是您的账号被冻结';
-        this.submitting = false;
+      });
+  }
+
+  onLogin(): void {
+    console.log('执行了login方法');
+    const user = {
+      // tslint:disable-next-line:no-non-null-assertion
+      username: this.loginForm.get('username')!.value as string,
+      // tslint:disable-next-line:no-non-null-assertion
+      password: this.loginForm.get('password')!.value as string,
+    };
+    this.login(user);
+  }
+
+  /**
+   * 微信扫码登录
+   */
+  onWeChatLogin() {
+    this.userService.getLoginQrCode()
+      .subscribe(src => {
+        this.qrCodeSrc = src;
+        this.loginModel = 'wechat';
+        this.userService.onScanLoginQrCode$.pipe(first()).subscribe(data => {
+          const uuid = data.body;
+          console.log('从后台获取的uuid是' + uuid);
+          console.log('登陆了');
+          this.login({username: uuid, password: uuid});
+        });
       });
   }
 }

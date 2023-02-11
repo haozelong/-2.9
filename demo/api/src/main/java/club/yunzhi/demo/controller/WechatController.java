@@ -156,32 +156,6 @@ public class WechatController {
     httpServletResponse.getOutputStream().close();
   }
 
-  /**
-   * 用户登录二维码认证成功的，完成使用code登录。
-   * 该功能实际上是有WechatAuthFilter完成的
-   */
-  @GetMapping("login")
-  @JsonView(LoginJsonView.class)
-  public WeChatUser login() {
-    Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    return (WeChatUser) principal;
-  }
-
-
-  /**
-   * 注册
-   *
-   * @param getUserInfoInput 用户加密后的手机号信息
-   * @return 手机号存在, true;不存在,false. sessionKey无效等抛出异常
-   */
-  @PostMapping("register")
-  public Boolean register(@RequestBody GetUserInfoInput getUserInfoInput) {
-    Assert.notNull(getUserInfoInput, "输入不能为空");
-
-    WeChatUser wechatUser = (WeChatUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    return this.wechatService.register(wechatUser, getUserInfoInput.getEncryptedData(), getUserInfoInput.getIv());
-  }
-
 
   public static class GetUserInfoInput {
     private String encryptedData;

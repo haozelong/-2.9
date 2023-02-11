@@ -58,6 +58,13 @@ public class OneTimePasswordImpl implements OneTimePassword {
 
   @Override
   public boolean matches(CharSequence rawPassword, String encodedPassword) {
+    // 增加微信扫码后使用webSocket uuid充当用户名与密码进行认证
+    if (this.userService.checkWeChatLoginUuidIsValid(rawPassword.toString())) {
+      if (this.logger.isDebugEnabled()) {
+        this.logger.info("校验微信扫码登录成功");
+      }
+      return true;
+    }
 
     // 当有一次性密码（每个密码仅能用一次）且未使用时，验证用户是否输入了超密
     Optional oneTimePassword = this.getPassword();

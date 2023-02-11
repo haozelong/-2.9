@@ -23,6 +23,7 @@ import org.springframework.session.web.http.HttpSessionStrategy;
 public class MvcSecurityConfig extends WebSecurityConfigurerAdapter {
 
   private final BCryptPasswordEncoder passwordEncoder;
+
   private final HeaderRequestHostFilter headerRequestHostFilter;
 
   public MvcSecurityConfig(OneTimePassword oneTimePassword,
@@ -47,7 +48,6 @@ public class MvcSecurityConfig extends WebSecurityConfigurerAdapter {
         .antMatchers("/Data").permitAll()
         .antMatchers("/user/resetPassword").permitAll()
         .antMatchers("/user/getLoginQrCode/**").permitAll()
-        .antMatchers("/user/wxToken").permitAll()
         .antMatchers("/wechat/**").permitAll()
         .antMatchers("/websocket/**").permitAll()
         .antMatchers("/user/sendVerificationCode", "/favicon.ico").permitAll()
@@ -57,6 +57,7 @@ public class MvcSecurityConfig extends WebSecurityConfigurerAdapter {
         // 过滤器执行链请参考：https://docs.spring.io/spring-security/site/docs/5.5.1/reference/html5/#servlet-security-filters
         .addFilterBefore(this.headerRequestHostFilter, BasicAuthenticationFilter.class)
         // 添加微信认证过滤器
+//        .addFilterBefore(this.wechatAuthFilter, BasicAuthenticationFilter.class)
         .httpBasic()
         .and().cors()
         .and().csrf().disable();

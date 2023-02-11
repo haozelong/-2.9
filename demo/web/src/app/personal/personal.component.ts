@@ -2,9 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import {Assert} from '../../common/utils';
 import {filter, first} from 'rxjs/operators';
 import {CommonService} from '../../service/common.service';
-import {WebsocketService} from '../../service/websocket.service';
 import {UserService} from '../../service/user.service';
 import {User} from '../../entity/user';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-personal',
@@ -19,8 +19,7 @@ export class PersonalComponent implements OnInit {
 
   constructor(private userService: UserService,
               private location: Location,
-              private commonService: CommonService,
-              private websocketService: WebsocketService) { }
+              private commonService: CommonService) { }
 
   ngOnInit(): void {
     this.userService.getCurrentLoginUser$()
@@ -55,10 +54,6 @@ export class PersonalComponent implements OnInit {
 
   onClose() {
     this.isShowQrCode = false;
-  }
-
-  onTest() {
-    this.websocketService.send('/app/hello', '123');
   }
 
 }

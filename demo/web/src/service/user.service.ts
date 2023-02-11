@@ -11,6 +11,7 @@ import {Page} from '../common/page';
 import {HttpSuccessResponse} from '../common/http-success-response';
 import {UserStatus} from '../entity/enum/user-status';
 import {WebSocketData} from '../app/model/web-socket-data';
+import {WebsocketService} from './websocket.service';
 
 @Injectable({
   providedIn: 'root'
@@ -48,17 +49,35 @@ export class UserService {
    */
   public logoutTriggerCallbacks = new Array<() => void>();
 
-  constructor(protected httpClient: HttpClient,
-              private commonService: CommonService,
-              private router: Router) {
-  }
-
   /**
    * 绑定用户二维码
    */
   private onScanBindUserQrCode = new Subject<WebSocketData>();
   public onScanBindUserQrCode$ = this.onScanBindUserQrCode.asObservable() as Observable<WebSocketData>;
 
+  /**
+   * 登录二维码
+   */
+  private onScanLoginQrCode = new Subject<WebSocketData>();
+  public onScanLoginQrCode$ = this.onScanLoginQrCode.asObservable() as Observable<WebSocketData>;
+
+
+  constructor(protected httpClient: HttpClient,
+              private router: Router,
+              private websocketServer: WebsocketService) {
+    this.websocketServer.autowiredUserService(this);
+    // 注册前台扫码绑定的路由，扫码绑定后，后台主动发起请求
+    this.websocketServer.register('/user/stomp/scanBindUserQrCode', this.onScanBindUserQrCode);
+    // 注册前台扫码登陆的路由，扫码登陆后，后台主动发起请求
+    this.websocketServer.register('/user/stomp/scanLoginQrCode', this.onScanLoginQrCode);
+  }
+
+  /**
+   * 获取登录二维码
+   */
+  getLoginQrCode(): Observable<string> {
+    return this.httpClient.get<string>(`${this.baseUrl}/getLoginQrCode/${this.websocketServer.uuid}`);
+  }
 
   /**
    * 生成绑定的二维码
@@ -133,28 +152,30 @@ export class UserService {
   /**
    * 请求当前登录用户
    */
-  initCurrentLoginUser(callback?: () => void): void {
+  initCurrentLoginUser(callback?: () => void): Observable<User> {
     // 由于在构造函数中使用了本函数, 不加setTimeout在其他地方注入时可能会造成undefined的问题
     // 为什么httpClient请求不以异步进行 需要setTimeout还没研究明白
-    this.httpClient.get<User>(`${this.baseUrl}/currentLoginUser`)
-      .subscribe((user: User) => {
-          this.triggerLoginCallbacks();
-          this.setCurrentLoginUser(user);
-        }, () => {
-          if (callback) {
-            callback();
-          }
-          try {
-            this.router.navigateByUrl('/login').then();
-          } catch (e) {
-            console.error('在跳转路由时发生错误', '/login');
-          }
-        },
-        () => {
-          if (callback) {
-            callback();
-          }
-        });
+    return new Observable<User>(subscriber => {
+      this.httpClient.get<User>(`${this.baseUrl}/currentLoginUser`)
+        .subscribe((user: User) => {
+            this.triggerLoginCallbacks();
+            console.log('当前登录用户是' + user);
+            this.setCurrentLoginUser(user);
+            subscriber.next(user);
+          }, error => {
+            if (callback) {
+              callback();
+            }
+            this.setCurrentLoginUser(null);
+            subscriber.error(error);
+          },
+          () => {
+            if (callback) {
+              callback();
+            }
+            subscriber.complete();
+          });
+    });
   }
 
   /**
@@ -174,12 +195,10 @@ export class UserService {
     return this.httpClient.get<boolean>(`${this.baseUrl}/isEmailExist`, {params: httpParams});
   }
 
-  login(user: { username: string, password: string, verificationCode: string }): Observable<User> {
+  login(user: { username: string, password: string}): Observable<User> {
     // 新建Headers，并添加认证信息
     let headers = new HttpHeaders();
-    // 添加 content-type
-    headers = headers.append('Content-Type', 'application/x-www-form-urlencoded')
-      .append(UserService.VERIFICATION_CODE, user.verificationCode);
+
     // 添加认证信息
     headers = headers.append('Authorization',
       'Basic ' + btoa(user.username + ':' + encodeURIComponent(user.password)));
@@ -289,7 +308,7 @@ export class UserService {
    * 新增
    */
   public save(user: User): Observable<User> {
-    return this.httpClient.post<User>(`${this.baseUrl}`, user);
+    return this.httpClient.post<User>(`${this.baseUrl}/add`, user);
   }
 
   /**
@@ -326,9 +345,9 @@ export class UserService {
   /**
    * 更新
    */
-  public update(userId: number, user: { username: string, name: string, num: string }): Observable<User> {
+  public update(userId: number, user: { username: string, name: string}): Observable<User> {
     Assert.isNumber(userId, 'userId must be number');
-    Assert.isNotNullOrUndefined(user, user.num, user.name, user.username,
+    Assert.isNotNullOrUndefined(user, user.name, user.username,
       'some properties must be passed');
     return this.httpClient.put<User>(`${this.baseUrl}/${userId.toString()}`, user);
   }

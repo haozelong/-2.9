@@ -2,10 +2,6 @@ import {Injectable} from '@angular/core';
 import {HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
 import {Observable, throwError} from 'rxjs';
 import {catchError} from 'rxjs/operators';
-import {CommonService} from '../../service/common.service';
-import {Router} from '@angular/router';
-import {UserService} from '../../service/user.service';
-import {environment} from '../../environments/environment';
 
 /**
  * HTTP请求错误拦截器.
@@ -14,9 +10,15 @@ import {environment} from '../../environments/environment';
   providedIn: 'root'
 })
 export class HttpErrorInterceptor implements HttpInterceptor {
-  constructor(private commonService: CommonService,
-              private router: Router,
-              private userService: UserService) {
+  public static phone = '13920618851';
+
+  error = (url: string, message: string) => {
+    console.warn(HttpErrorInterceptor.name + ': 请重写error方法以自定义错误');
+    alert(url + ' ' + message);
+  }
+
+  goToLoginPath = () => {
+    console.error(HttpErrorInterceptor.name + ': 请重写goToLoginPath方法以自定义跳转登录界面');
   }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
@@ -31,42 +33,38 @@ export class HttpErrorInterceptor implements HttpInterceptor {
    * @param error 异常
    */
   private handleHttpException(error: HttpErrorResponse): Observable<HttpEvent<any>> {
+    let url = error.url;
+    let message = error.status.toString();
     switch (error.status) {
       case 401:
-        if (!this.router.url.startsWith(`/login`)) {
-          this.userService.setCurrentLoginUser(null);
-          // 未登录，跳转到登录页
-          this.router.navigateByUrl('/login').then();
-        }
-        break;
+        this.goToLoginPath();
+        // 最终将异常抛出来，便于组件个性化处理
+        return throwError(error);
       case 400:
-        this.commonService.error(() => {
-        }, error.url, '非合理的请求参数');
+        message = '非合理的请求参数';
         break;
       case 403:
-        this.commonService.error(() => {
-        }, error.url, '您无此操作权限');
+        message = '您无此操作权限';
         break;
       case 404:
-        this.commonService.error(() => {
-        }, error.url, '当前访问的地址不存在');
+        message = '当前访问的地址不存在';
         break;
       case 405:
-        this.commonService.error(() => {
-        }, error.url, '当前请求方法不允许');
+        message = '当前请求方法不允许';
         break;
       case 500:
-        this.commonService.error(() => {
-          }, error.url + error.message + '。请联系我们(微信同号)：' + environment.phone,
-          '发生逻辑错误');
+        url += error.message + '。请联系开发者(微信同号)：' + HttpErrorInterceptor.phone;
+        message = '发生逻辑错误';
         break;
       case 0:
-        this.commonService.error(() => {
-        }, error.url + '。请联系我们(微信同号)：' + environment.phone, '未知错误');
+        message = '未知网络错误';
+        url += '。请联系开发者(微信同号)：' + HttpErrorInterceptor.phone;
         break;
       default:
         break;
     }
+    this.error(url, message);
+
     // 最终将异常抛出来，便于组件个性化处理
     return throwError(error);
   }

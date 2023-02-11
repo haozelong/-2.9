@@ -13,6 +13,11 @@ export const menus: Array<BaseMenu> = [
 
   },
   {
+    name: '用戶管理',
+    url: 'user',
+    icon: 'fas fa-user',
+  },
+  {
     name: '个人中心',
     url: 'personal',
     icon: 'fas fa-user',

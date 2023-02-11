@@ -42,35 +42,6 @@ public class UserController {
   }
 
   /**
-   * 验证
-   *
-   * @return echostr
-   */
-  @GetMapping(value = "wxToken")
-  public Long page(
-          @RequestParam(value = "timestamp") String timestamp,
-          @RequestParam(value = "nonce") String nonce,
-          @RequestParam(value = "signature") String signature,
-          @RequestParam(value = "echostr") Long echostr
-  ) {
-    ArrayList<String> list=new ArrayList<String>();
-    list.add(nonce);
-    list.add(timestamp);
-    list.add("yunzhi");
-
-    Collections.sort(list);
-
-    String signature2 = list.get(0)+list.get(1)+list.get(2);
-    System.out.println(DigestUtils.shaHex(list.get(0)+list.get(1)+list.get(2)));
-
-    System.out.println(signature);
-    if (signature2.equals(signature)) {
-      return echostr;
-    }
-    return 0l;
-  }
-
-  /**
    * 校验密码是否正确
    *
    * @param vUser 带有密码的VUser
@@ -96,6 +67,17 @@ public class UserController {
   @JsonView(GetAllJsonView.class)
   public List<User> getAll() {
     return this.userService.getAll();
+  }
+
+  /**
+   * 生成绑定微信的二维码
+   * @param httpSession session
+   * @return 二维码对应的系统ID(用于触发扫码后的回调)
+   */
+  @GetMapping("generateBindQrCode")
+  public String generateBindQrCode(HttpSession httpSession) {
+    System.out.println(httpSession.getId());
+    return this.userService.generateBindQrCode(httpSession.getId());
   }
 
   /**
@@ -135,6 +117,17 @@ public class UserController {
   }
 
   /**
+   * 获取登录的二维码
+   * @param wsAuthToken webSocket认证token
+   * @param httpSession session
+   * @return 二维码对应的系统ID(用于触发扫码后的回调)
+   */
+  @GetMapping("getLoginQrCode/{wsAuthToken}")
+  public String getLoginQrCode(@PathVariable String wsAuthToken, HttpSession httpSession) {
+    return this.userService.getLoginQrCode(wsAuthToken, httpSession);
+  }
+
+  /**
    * 获取所有用户
    *
    * @param pageable 分页信息
@@ -168,7 +161,6 @@ public class UserController {
    */
   @PostMapping("add")
   @JsonView(AddUser.class)
-  @Secured(YunzhiSecurityRole.ROLE_ADMIN)
   public User save(@RequestBody User user) {
     return userService.save(user);
   }

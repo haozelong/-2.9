@@ -30,6 +30,13 @@ const routes: Routes = [
         data: {
           title: '个人中心'
         }
+      }, {
+        path: 'user',
+        loadChildren: () => import('./user/user.module')
+          .then(m => m.UserModule),
+        data: {
+          title: '用戶管理'
+        }
       },
     ]
   }
