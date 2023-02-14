@@ -147,12 +147,6 @@ public class UserController {
         pageable);
   }
 
-  @PostMapping("register")
-  public void register(@RequestBody User user) {
-    logger.debug("保存");
-    userService.save(user);
-  }
-
   /**
    * 保存用户
    *

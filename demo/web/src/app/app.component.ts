@@ -2,7 +2,6 @@ import {Component, Injector, OnInit} from '@angular/core';
 import {CommonService} from '../service/common.service';
 import {Router} from '@angular/router';
 import {UserService} from '../service/user.service';
-import {delay} from 'rxjs/operators';
 import {XAuthTokenInterceptor} from './interceptor/x-auth-token.interceptor';
 import {LoadingInterceptor} from './interceptor/loading.interceptor';
 import {randomNumber} from '../common/utils';
@@ -12,7 +11,6 @@ import {Title} from '@angular/platform-browser';
 import {WebsocketService} from '../service/websocket.service';
 import {environment} from '../environments/environment';
 import {ConfigService} from '../service/config.service';
-// import {NgxSpinnerService} from 'ngx-spinner';
 import {of, Subscription} from 'rxjs';
 
 @Component({

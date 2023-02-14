@@ -24,6 +24,7 @@ public class User extends AbstractEntity {
     private String password;
 
     /**
+     * 此处几乎没用
      * 微信对应的openid
      */
     @JsonView(OpenidJsonView.class)

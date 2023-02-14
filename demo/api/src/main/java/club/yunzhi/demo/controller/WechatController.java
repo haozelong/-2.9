@@ -32,12 +32,6 @@ public class WechatController {
   private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
   @Autowired
-  WxMaService wxMaService;
-
-  @Autowired
-  WxMaConfig wxMaConfig;
-
-  @Autowired
   WeChatMpService weChatMpService;
 
   private final WechatService wechatService;
@@ -156,33 +150,6 @@ public class WechatController {
     httpServletResponse.getOutputStream().close();
   }
 
-
-  public static class GetUserInfoInput {
-    private String encryptedData;
-    private String iv;
-
-    public GetUserInfoInput() {
-    }
-
-    public String getEncryptedData() {
-      return encryptedData;
-    }
-
-    public void setEncryptedData(String encryptedData) {
-      this.encryptedData = encryptedData;
-    }
-
-    public String getIv() {
-      return iv;
-    }
-
-    public void setIv(String iv) {
-      this.iv = iv;
-    }
-  }
-
-  private class LoginJsonView {
-  }
 }
 
 

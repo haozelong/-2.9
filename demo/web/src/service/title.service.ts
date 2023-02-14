@@ -27,6 +27,7 @@ export class TitleService {
           if (route.snapshot.data.title) {
             title += route.snapshot.data.title + ' - ';
           }
+          // tslint:disable-next-line:no-non-null-assertion
           route = route.firstChild!;
         }
         // 观察者对象发送数据

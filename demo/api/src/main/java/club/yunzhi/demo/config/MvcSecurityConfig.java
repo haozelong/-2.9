@@ -56,8 +56,6 @@ public class MvcSecurityConfig extends WebSecurityConfigurerAdapter {
         // 添加通过header获取host信息的过滤器
         // 过滤器执行链请参考：https://docs.spring.io/spring-security/site/docs/5.5.1/reference/html5/#servlet-security-filters
         .addFilterBefore(this.headerRequestHostFilter, BasicAuthenticationFilter.class)
-        // 添加微信认证过滤器
-//        .addFilterBefore(this.wechatAuthFilter, BasicAuthenticationFilter.class)
         .httpBasic()
         .and().cors()
         .and().csrf().disable();

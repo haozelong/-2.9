@@ -36,14 +36,6 @@ export class XAuthTokenInterceptor implements HttpInterceptor {
     }
   }
 
-  /**
-   * 清空token
-   */
-  public static clearToken() {
-    this.token = null;
-    window.sessionStorage.removeItem('x-auth-token');
-  }
-
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     if (XAuthTokenInterceptor.token !== null) {
       request = request.clone({setHeaders: {'x-auth-token': XAuthTokenInterceptor.token}});
